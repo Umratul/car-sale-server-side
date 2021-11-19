@@ -22,6 +22,7 @@ async function run() {
         // console.log('connected');
         const database = client.db('cars');
         const servicesCollection = database.collection('services');
+        const usersCollection = database.collection('users');
 
         //get
         app.get('/services', async (req, res) => {
@@ -45,13 +46,30 @@ async function run() {
         app.post('/services', async (req, res) => {
             const service = req.body;
             console.log('hit the api',service);
-            
-
             const result = await servicesCollection.insertOne(service);
             console.log(result);
             res.json(result);
 
         });
+
+        //post for user
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result);
+        });
+
+
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            console.log('put', user);
+                    const filter = { email: user.email };
+                    const updateDoc = { $set: { role: 'admin' } };
+                    const result = await usersCollection.updateOne(filter, updateDoc);
+                    res.json(result);
+
+        })
 
         //delete
         app.delete('/services/:id', async (req, res) => {
